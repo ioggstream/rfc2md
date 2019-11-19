@@ -1,44 +1,45 @@
 #!/usr/bin/env python3
-from sys import argv
-from collections import OrderedDict
+from io import BytesIO
+from sys import argv, stderr
 from pathlib import Path
 from lxml import etree
-
-try:
-    fpath = argv[10]
-except IndexError:
-    fpath = "draft-polli-service-description-well-known-uri.xml"
-    fpath = "draft-cedik-http-warning-01.xml"
-
 import lxml
 from lxml import etree
+import re
+import logging
 
-txt = open(fpath).read()
-root = etree.fromstring(txt.encode())
-
-HEAD = """---
-title: {{ front["@title"] }}
-docname: {{ rfc["@docName"] }}
-category: {{ rfc["@category"] }}
-
-ipr: {{ rfc["@ipr"] }}
-
-area: {{ front["@area"] }}
-workgroup: {{ front["@workgroup"]}}
-keyword: {{ front["@keyword"]}}
-
---- abstract
-
-{{ front['abstract']['t'] }}
-
---- note_{{  front["note"]['@title'].replace(' ','_') }}
-
-{{ front["note"]['t'] }}
-
-"""
+log = logging.getLogger()
+logging.basicConfig()
+# Global variables
+section_level = 0
+PAD = " " * 4
 
 
-import types
+def parse(c):
+    parse_map = {
+        "area": parse_generic_text,
+        "workgroup": parse_generic_text,
+        "keyword": parse_generic_text,
+        "rfc": parse_rfc,
+        "note": parse_note,
+        "abstract": parse_abstract,
+        "author": parse_author,
+        "title": parse_title,
+        "front": parse_front,
+        "middle": parse_middle,
+        "back": parse_back,
+        "t": parse_t,
+        "section": parse_section,
+        "figure": parse_figure,
+        "artwork": parse_artwork,
+        "list": parse_list,
+        "references": parse_references,
+    }
+    if c.tag not in parse_map:
+        log.warning("Missing tag: %r", c.tag)
+        return ""
+    f = parse_map[c.tag]
+    return f(c)
 
 
 def parse_list(t):
@@ -51,78 +52,14 @@ def parse_list(t):
     return ret
 
 
-def test_parse_list():
-    t = b'<list>      <t>Warn Code: 246</t>      <t>Short Description: Embedded Warning</t>      <t>Reference: <xref target="warning-header"/> of [[ this document ]]</t>   </list>'
-    xml_t = etree.fromstring(t)
-    txt = parse_list(xml_t)
-    assert " * Short Description: " in txt
-
-
-def test_parse_t():
-    t = b'<t><xref target="RFC8631"/> introduced the ability\nto provide documentation, descriptions, metadata, or status\ninformation for Web Services via Link Relations.</t>\n\n'
-    xml_t = etree.fromstring(t)
-    txt = parse_t(xml_t)
-    assert "xref" not in txt
-
-
-def test_parse_t_2():
-    t = (
-        b"<t><list>"
-        b"<t>Warn Code: 246</t><t>Short Description: Embedded Warning</t>"
-        b'<t>Reference: <xref target="warning-header"/> of [[ this document ]]</t>'
-        b"</list>"
-        b"</t>"
-    )
-    xml_t = etree.fromstring(t)
-    txt = parse_t(xml_t)
-    assert "Short Description" in txt
-
-
-def test_parse_middle():
-    txt = parse_middle(root[1])
-    out = list(txt)
-    Path("_middle.md").write_text("".join(out))
-
-
-def test_parse_author():
-    t = """
-    <author initials="E." surname="Wilde" fullname="Erik Wilde">
-         <organization>Axway</organization>
-         <address>
-            <email>erik.wilde@dret.net</email>
-            <uri>http://dret.net/netdret/</uri>
-         </address>
-    </author>
-    """
-    xml_t = etree.fromstring(t)
-    txt = parse_author(xml_t)
-    assert "name:" in txt
-
-
-def test_root():
-    for c in root:
-        txt = parse(c)
-        out = list(txt)
-        Path(f"_{c.tag}.md").write_text("".join(out))
-
-
-def test_parse_section():
-    t = b'<section title="Introduction" anchor="introduction">\n         <t>Many current APIs are based on HTTP\n            <xref target="RFC7230"/> as their application protocol. Their\n            response handling model is based on the assumption that requests either are\n            successful or they fail. In both cases (success and fail) an HTTP status code\n            <xref target="RFC7231"/> is returned to convey either fact.\n         </t>\n         <t>But response status is not always strictly either success or failure. For example, there are cases where an underlying\n            system returns a response with data that cannot be defined as a clear error. API\n            providers who are integrating such a service might want to\n            return a correct response nonetheless, but returning a HTTP status code of e.g. 200 OK\n            without any additional information is not the only possible approach in this case.\n         </t>\n         <t>As defined in the principles of Web architecture\n            <xref target="W3C.REC-webarch-20041215"/>, agents that "recover from errors by\n            making a choice without the user\'s consent are not acting on the user\'s behalf".\n            Therefore APIs should be able to communicate what has happened to their consumers, which then allows clients or users to make more informed decisions.\n         </t>\n         <t>This document defines a warning code and a standard response structure for communicating and representing warning\n            information in HTTP APIs. The goal is to allow HTTP providers to have a standardized way of communicating to their consumers that while the response can be considered to be a non-failure, there is some warning information available that they might want to take into account.\n         </t>\n         <t>As a general guideline, warning information should be considered to be any information that can be safely ignored (treating the response as if it did not contain any warning information), but that might help clients and users to make better decisions.</t>\n      </section>\n      '
-    xml_t = etree.fromstring(t)
-    txt = parse_section(xml_t)
-
-    out = "".join(txt)
-    assert "{{?RFC7230}}" in out
-    assert "# Introduction {#introduction}\n" in out
-
-
-def test_parse_figure():
-    t = b'<figure><artwork>\nPOST /example HTTP/1.1\nHost: example.com\nAccept: application/json\n\nHTTP/1.1 200 OK\nContent-Type: application/json\nWarning: 246 - "Embedded Warning" "Fri, 04 Oct 2019 09:59:45 GMT"\n\n{\n  "request_id": "2326b087-d64e-43bd-a557-42171155084f",\n  "warnings": [\n    {\n      "detail": "Street name was too long. It has been shortened...",\n      "instance": "https://example.com/shipments/3a186c51/msgs/c94d",\n      "status": "200",\n      "title": "Street name too long. It has been shortened.",\n      "type": "https://example.com/errors/shortened_entry"\n    },\n    {\n      "detail": "City for this zipcode unknown. Code for shipment..",\n      "instance": "https://example.com/shipments/3a186c51/msgs/5927",\n      "status": "200",\n      "title": "City for zipcode unknown.",\n      "type": "https://example.com/errors/city_unknown"\n    }\n  ],\n  "id": "3a186c51d4281acb",\n  "carrier_tracking_no": "84168117830018",\n  "tracking_url": "http://example.com/3a186c51d",\n  "label_url": "http://example.com/shipping_label_3a186c51d.pdf",\n  "price": 3.4\n}\n</artwork></figure>\n         '
-    xml_t = etree.fromstring(t)
-    txt = parse_figure(xml_t)
-
-    out = "".join(txt)
-    assert "```\n\nPOST" in out
+def parse_rfc(e):
+    field_map = {"ipr": "ipr", "docName": "docname", "category": "category"}
+    yield "---\n"
+    for k, v in field_map.items():
+        if e.get(k):
+            yield f"\n{v}: " + e.get(k)
+    for c in e.getchildren():
+        yield from parse(c)
 
 
 def parse_figure(f):
@@ -133,10 +70,7 @@ def parse_figure(f):
 
 def parse_artwork(a):
     assert a.tag == "artwork"
-    yield """```\n%s\n```\n\n""" % a.text
-
-
-section_level = 0
+    yield """~~~\n%s\n~~~\n\n""" % a.text
 
 
 def get_text_element(e, key):
@@ -148,6 +82,9 @@ def get_text_element(e, key):
 
 
 def parse_author(author):
+
+    if not author.get("initials"):
+        return None
 
     ret = [
         f"""ins: { author.get('initials') } { author.get('surname') }""",
@@ -166,30 +103,49 @@ def parse_author(author):
     if uri:
         ret += [f"uri: {uri}"]
 
-    pad = " " * 2
-    return f"\n-{pad}\n" + "\n".join((pad + x.strip() for x in ret))
+    yield f"\n{PAD}-\n"
+    yield from (PAD + x + "\n" for x in ret)
 
 
 def ensure_string(s):
-    return s.decode() if hasattr(s, "decode") else s
+    re_xquotes = re.compile("[“”]")
+    r = s.decode() if hasattr(s, "decode") else s
+    r = re_xquotes.sub("", r)
+    return r
+
+
+def parse_xref(e):
+    c_values = e.values()
+    if "default" in c_values:
+        c_values.remove("default")
+    assert len(c_values) == 1
+    c_value = c_values[0]
+    if c_value.startswith("RFC"):
+        return "{{?%s}}" % c_value
+
+    return "{{%s}}" % c_value
 
 
 def parse_t(t):
     assert t.tag == "t"
     text = stringify_children(t)
 
+    map_t = {
+        "xref": parse_xref,
+        "list": parse_list,
+        "em": parse_em,
+        "spanx": parse_spanx,
+        "eref": parse_eref,
+    }
     for c in t.getchildren():
-        if c.tag == "xref":
-            c_text = ensure_string(etree.tostring(c)).strip(c.tail)
-            c_values = c.values()
-            assert len(c_values) == 1
-            c_value = c_values[0]
-            if c_value.startswith("RFC"):
-                text = text.replace(c_text, "{{?%s}}" % c_value)
-            else:
-                text = text.replace(c_text, "{{%s}}" % c_value)
-        elif c.tag == "list":
-            text = parse_list(c)
+        c_text = ensure_string(etree.tostring(c)).strip(c.tail)
+
+        if c.tag not in map_t:
+            raise NotImplementedError
+
+        parse_f = map_t[c.tag]
+        c_value = parse_f(c)
+        text = text.replace(c_text, c_value)
 
     return text.strip() + "\n\n"
 
@@ -211,40 +167,60 @@ def stringify_children(node):
     return "".join([ensure_string(c) for c in chunks if c])
 
 
-def parse(c):
-    parse_map = {
-        "note": parse_note,
-        "abstract": parse_abstract,
-        "author": parse_author,
-        "title": parse_title,
-        "front": parse_front,
-        "middle": parse_middle,
-        "back": parse_back,
-        "t": parse_t,
-        "section": parse_section,
-        "figure": parse_figure,
-        "artwork": parse_artwork,
-        "list": parse_list,
-    }
-    if c.tag not in parse_map:
-        print("Missing tag: ", c.tag)
-        return ""
-    f = parse_map[c.tag]
-    return f(c)
+def parse_spanx(e):
+    assert e.tag == "spanx"
+    style = e.get("style")
+    r = e.text
+    if style == "emph":
+        r = f"*{r}*"
+    return r
+
+
+def parse_em(e):
+    return f"*{e.text}*"
+
+
+def parse_eref(e):
+    target = e.get("target")
+    text = e.text
+    if target == text:
+        return f"<{text}>"
+    return f"[{text}]({target})"
+
+
+def get_title_or_name(s):
+
+    if s.get("title"):
+        return s.get("title")
+
+    if s.tag == "name":
+        return s.text
+
+    if s.findall(".//name"):
+        return s.findall(".//name")[0].text
+
+    raise NotImplementedError
 
 
 def parse_section(s):
     global section_level
     assert s.tag == "section"
-    assert s.get("title"), "Missing title"
+
+    title = get_title_or_name(s)
+
+    assert title
     section_level += 1
     ret = "#" * section_level
-    ret += " %s" % s.get("title")
+    ret += " %s" % title
 
     if s.get("anchor"):
         ret += " {#%s}" % s.get("anchor")
-    yield ret + "\n\n"
+    yield ret + "\n"
 
+    if s.get('numbered') == 'false':
+        yield '{:numbered="false"}\n'
+
+    yield '\n'
     for e in s.getchildren():
         ret = parse(e)
         if isinstance(ret, str):
@@ -255,6 +231,61 @@ def parse_section(s):
     section_level -= 1
 
 
+def parse_reference(e):
+    anchor = e.get("anchor")
+    if not anchor:
+        raise NotImplementedError
+    if anchor.startswith("RFC"):
+        yield f"{anchor}:"
+        return
+
+    ret = [f"{e.get('anchor')}:"]
+    content = []
+    if e.get("target"):
+        content += [f'target: {e.get("target")}']
+
+    front = e.findall(".//front")
+    assert len(front) == 1
+    for x in front[0].getchildren():
+        if x.text:
+            content += [f"{x.tag}: {x.text}"]
+
+    authors = parse_authors(front[0])
+    content += authors
+    log.debug("content: %s", content)
+    yield from ret + [PAD + x for x in content]
+
+
+def ensure_iterable(stanza: (str, list)):
+    return stanza.splitlines() if isinstance(stanza, str) else stanza
+
+
+def parse_references(e):
+    title = get_title_or_name(e)
+
+    if title.lower() == "references":
+        # Nested references
+        for r in e.getchildren():
+            yield from parse_references(r)
+        return
+
+    if "normative" in title.lower():
+        yield f"\nnormative:\n"
+    elif "informative" in title.lower():
+        yield f"\ninformative:\n"
+    else:
+        raise NotImplementedError
+
+    for r in e.getchildren():
+        if r.tag == "name":
+            # we already processed "name"
+            continue
+        assert r.tag != "author"
+        ref = parse_reference(r)
+        yield from (PAD + x + "\n" for x in ref)
+    yield "\n"
+
+
 def parse_abstract(e):
     abstract = stringify_children(e[0])
     return f"\n\n--- abstract\n{abstract.strip()}"
@@ -262,17 +293,49 @@ def parse_abstract(e):
 
 def parse_title(e):
     assert e.tag == "title"
-    return f"title: {e.text}"
+    return f"\ntitle: {e.text}"
+
+
+def parse_generic_text(e):
+    return f"\n{e.tag}: {e.text}"
 
 
 def parse_note(e):
     assert e.tag == "note"
-    title = e.get("title") or ""
+    title = get_title_or_name(e)
+
     if title:
         title = f"_{title.replace(' ', '_')}"
     yield f"\n\n--- note{title}\n"
     for c in e.getchildren():
         yield from parse(c)
+
+
+def has_author(e):
+    if e.tag != "author":
+        return False
+
+    if e.get("fullname"):
+        return True
+
+    return False
+
+
+def parse_authors(e):
+    # FIXME consider None authors
+    log.debug("authors: %r", etree.tostring(e))
+    authors = e.findall(".//author")
+    if not any(has_author(a) for a in authors):
+        return
+
+    if authors:
+        yield "\nauthor:"
+
+    for c in authors:
+        # author stanza should be unique
+        a = parse_author(c)
+        if a:
+            yield from a
 
 
 def parse_front(e):
@@ -283,15 +346,37 @@ def parse_front(e):
         # author stanza should be unique
         if c.tag == "author" and not has_autor:
             has_autor = True
-            yield "\nauthor:"
+            yield from parse_authors(e)
+            continue
+
         yield from parse(c)
 
 
 def parse_middle(m: lxml.etree.Element):
     assert m.tag == "middle"
+    yield "--- middle\n"
     for e in m.getchildren():
         yield from parse(e)
 
 
-def parse_back(b):
-    yield ""
+def parse_back(e):
+    yield "--- back\n"
+    for c in e.getchildren():
+        yield from parse(c)
+
+
+if __name__ == "__main__":
+    from sys import argv
+    from urllib.request import urlopen
+
+    fpath = argv[1]
+    if fpath.startswith("http"):
+        txt = urlopen(fpath).read()
+    else:
+        txt = Path(fpath).read_bytes()
+
+    parser = etree.XMLParser(dtd_validation=False, load_dtd=True, resolve_entities=True, no_network=False, recover=True)
+    root = etree.parse(BytesIO(txt), parser=parser).getroot()
+    out = parse(root)
+    txt = "".join(out)
+    log.warning(txt)

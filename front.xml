@@ -1,0 +1,17 @@
+  <front>
+    <title>Well-Known URIs for Service Description</title>
+
+    <author initials="R." surname="Polli" fullname="Roberto Polli">
+      <organization>Team Digitale, Italian Government</organization>
+      <address>
+        <email>robipolli@gmail.com</email>
+      </address>
+    </author>
+
+    <date year="2019" month="November" day="07"/>
+
+    <area>General</area>
+    <workgroup>HTTP</workgroup>
+    <keyword>Internet-Draft</keyword>
+</front>
+

@@ -1,0 +1,152 @@
+<references>      
+<name >references</name>
+<references title="Normative References">
+         <reference anchor="RFC2119" target="https://www.rfc-editor.org/info/rfc2119">
+            <front>
+               <title>Key words for use in RFCs to Indicate Requirement Levels</title>
+               <author initials="S." surname="Bradner" fullname="S. Bradner">
+                  <organization/>
+               </author>
+               <date year="1997" month="March"/>
+               <abstract>
+                  <t>
+                     In many standards track documents several words are used to signify the requirements in the
+                     specification. These words are often capitalized. This document defines these words as they should be
+                     interpreted in IETF documents. This document specifies an Internet Best Current Practices for the
+                     Internet Community, and requests discussion and suggestions for improvements.
+                  </t>
+               </abstract>
+            </front>
+            <seriesInfo name="BCP" value="14"/>
+            <seriesInfo name="RFC" value="2119"/>
+            <seriesInfo name="DOI" value="10.17487/RFC2119"/>
+         </reference>
+         <reference anchor="RFC7230" target='https://www.rfc-editor.org/info/rfc7230'>
+            <front>
+               <title>Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing</title>
+               <author initials='R.' surname='Fielding' fullname='R. Fielding' role='editor'>
+                  <organization />
+               </author>
+               <author initials='J.' surname='Reschke' fullname='J. Reschke' role='editor'>
+                  <organization />
+               </author>
+               <date year='2014' month='June' />
+               <abstract>
+                  <t>The Hypertext Transfer Protocol (HTTP) is a stateless application-level protocol for
+                     distributed, collaborative, hypertext information systems. This document provides an
+                     overview of HTTP architecture and its associated terminology, defines the &quot;http&quot;
+                     and &quot;https&quot; Uniform Resource Identifier (URI) schemes, defines the HTTP/1.1
+                     message syntax and parsing requirements, and describes related security concerns for
+                     implementations.</t>
+               </abstract>
+            </front>
+            <seriesInfo name='RFC' value='7230' />
+            <seriesInfo name='DOI' value='10.17487/RFC7230' />
+         </reference>
+         <reference anchor="RFC7231" target='https://www.rfc-editor.org/info/rfc7231'>
+            <front>
+               <title>Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content</title>
+               <author initials='R.' surname='Fielding' fullname='R. Fielding' role='editor'>
+                  <organization />
+               </author>
+               <author initials='J.' surname='Reschke' fullname='J. Reschke' role='editor'>
+                  <organization />
+               </author>
+               <date year='2014' month='June' />
+               <abstract>
+                  <t>The Hypertext Transfer Protocol (HTTP) is a stateless \%application- level protocol for
+                     distributed, collaborative, hypertext information systems. This document defines the semantics of
+                     HTTP/1.1 messages, as expressed by request methods, request header fields, response status codes,
+                     and response header fields, along with the payload of messages (metadata and body content) and
+                     mechanisms for content negotiation.</t>
+               </abstract>
+            </front>
+            <seriesInfo name='RFC' value='7231' />
+            <seriesInfo name='DOI' value='10.17487/RFC7231' />
+         </reference>
+         <reference anchor="RFC7234" target="https://www.rfc-editor.org/info/rfc7234">
+            <front>
+               <title>Hypertext Transfer Protocol (HTTP/1.1): Caching</title>
+               <author initials="R." surname="Fielding" fullname="R. Fielding" role="editor">
+                  <organization />
+               </author>
+               <author initials="M." surname="Nottingham" fullname="M. Nottingham" role="editor">
+                  <organization />
+               </author>
+               <author initials="J." surname="Reschke" fullname="J. Reschke" role="editor">
+                  <organization />
+               </author>
+               <date year="2014" month="June" />
+               <abstract>
+                  <t>
+                     The Hypertext Transfer Protocol (HTTP) is a stateless \%application- level protocol for distributed,
+                     collaborative, hypertext information systems. This document defines HTTP caches and the associated
+                     header fields that control cache behavior or indicate cacheable response messages.
+                  </t>
+               </abstract>
+            </front>
+            <seriesInfo name="RFC" value="7234" />
+            <seriesInfo name="DOI" value="10.17487/RFC7234" />
+         </reference>
+         <reference anchor="RFC7807" target="https://www.rfc-editor.org/info/rfc7807">
+            <front>
+               <title>Problem Details for HTTP APIs</title>
+               <author initials="M." surname="Nottingham" fullname="M. Nottingham">
+                  <organization />
+               </author>
+               <author initials="E." surname="Wilde" fullname="E. Wilde">
+                  <organization />
+               </author>
+               <date year="2016" month="March" />
+               <abstract>
+                  <t>
+                     This document defines a "problem detail" as a way to carry machine- readable details of errors in a HTTP
+                     response to avoid the need to define new error response formats for HTTP APIs.
+                  </t>
+               </abstract>
+            </front>
+            <seriesInfo name="RFC" value="7807" />
+            <seriesInfo name="DOI" value="10.17487/RFC7807" />
+         </reference>
+         <reference anchor="RFC8259" target="https://www.rfc-editor.org/info/rfc8259">
+            <front>
+               <title>The JavaScript Object Notation (JSON) Data Interchange Format</title>
+               <author initials="T." surname="Bray" fullname="T. Bray" role="editor">
+                  <organization />
+               </author>
+               <date year="2017" month="December" />
+               <abstract>
+                  <t>
+                     JavaScript Object Notation (JSON) is a lightweight, text-based, language-independent data
+                     interchange format. It was derived from the ECMAScript Programming Language Standard. JSON
+                     defines a small set of formatting rules for the portable representation of structured data.
+                  </t>
+                  <t>
+                     This document removes inconsistencies with other specifications of JSON, repairs specification
+                     errors, and offers experience-based interoperability guidance.
+                  </t>
+               </abstract>
+            </front>
+            <seriesInfo name="STD" value="90" />
+            <seriesInfo name="RFC" value="8259" />
+            <seriesInfo name="DOI" value="10.17487/RFC8259" />
+         </reference>
+      </references>
+      <references title="Informative References">
+         <reference anchor='W3C.REC-webarch-20041215'
+            target='http://www.w3.org/TR/2004/REC-webarch-20041215'>
+            <front>
+               <title>Architecture of the World Wide Web, Volume One</title>
+               <author initials='I.' surname='Jacobs' fullname='Ian Jacobs'>
+                  <organization />
+               </author>
+               <author initials='N.' surname='Walsh' fullname='Norman Walsh'>
+                  <organization />
+               </author>
+               <date month='December' day='15' year='2004' />
+            </front>
+            <seriesInfo name='World Wide Web Consortium Recommendation' value='REC-webarch-20041215' />
+            <format type='HTML' target='http://www.w3.org/TR/2004/REC-webarch-20041215' />
+         </reference>
+      </references>
+      </references>

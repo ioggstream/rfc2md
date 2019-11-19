@@ -1,0 +1,126 @@
+  <back>
+    <references>
+      <name>References</name>
+      <references>
+        <name>Normative References</name>
+        <reference anchor="RFC2119" target="https://www.rfc-editor.org/info/rfc2119">
+          <front>
+            <title>Key words for use in RFCs to Indicate Requirement Levels</title>
+            <seriesInfo name="DOI" value="10.17487/RFC2119"/>
+            <seriesInfo name="RFC" value="2119"/>
+            <seriesInfo name="BCP" value="14"/>
+            <author initials="S." surname="Bradner" fullname="S. Bradner">
+              <organization/>
+            </author>
+            <date year="1997" month="March"/>
+            <abstract>
+              <t>In many standards track documents several words are used to signify the requirements in the specification.  These words are often capitalized. This document defines these words as they should be interpreted in IETF documents.  This document specifies an Internet Best Current Practices for the Internet Community, and requests discussion and suggestions for improvements.</t>
+            </abstract>
+          </front>
+        </reference>
+      </references>
+      <references>
+        <name>Informative References</name>
+        <reference anchor="OpenAPI" target="https://github.com/OAI/OpenAPI-Specification">
+          <front>
+            <title>OpenAPI Specifications</title>
+            <author>
+              <organization/>
+            </author>
+            <date year="n.d."/>
+          </front>
+        </reference>
+        <reference anchor="RFC8631" target="https://www.rfc-editor.org/info/rfc8631">
+          <front>
+            <title>Link Relation Types for Web Services</title>
+            <seriesInfo name="DOI" value="10.17487/RFC8631"/>
+            <seriesInfo name="RFC" value="8631"/>
+            <author initials="E." surname="Wilde" fullname="E. Wilde">
+              <organization/>
+            </author>
+            <date year="2019" month="July"/>
+            <abstract>
+              <t>Many resources provided on the Web are part of sets of resources that are provided in a context that is managed by one particular service provider.  Often, these sets of resources are referred to as "Web                services" or "Web APIs".  This specification defines link relations that represent relationships from Web services or APIs to resources that provide documentation, descriptions, metadata, or status information for these resources.  Documentation is primarily intended for human consumers, whereas descriptions are primarily intended for automated consumers.  Metadata provides information about a service's context.  This specification also defines a link relation to identify status resources that are used to represent information about service status.</t>
+            </abstract>
+          </front>
+        </reference>
+        <reference anchor="RFC5785" target="https://www.rfc-editor.org/info/rfc5785">
+          <front>
+            <title>Defining Well-Known Uniform Resource Identifiers (URIs)</title>
+            <seriesInfo name="DOI" value="10.17487/RFC5785"/>
+            <seriesInfo name="RFC" value="5785"/>
+            <author initials="M." surname="Nottingham" fullname="M. Nottingham">
+              <organization/>
+            </author>
+            <author initials="E." surname="Hammer-Lahav" fullname="E. Hammer-Lahav">
+              <organization/>
+            </author>
+            <date year="2010" month="April"/>
+            <abstract>
+              <t>This memo defines a path prefix for "well-known locations", "/.well-known/", in selected Uniform Resource Identifier (URI) schemes.   [STANDARDS-TRACK]</t>
+            </abstract>
+          </front>
+        </reference>
+        <reference anchor="RFC8174" target="https://www.rfc-editor.org/info/rfc8174">
+          <front>
+            <title>Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</title>
+            <seriesInfo name="DOI" value="10.17487/RFC8174"/>
+            <seriesInfo name="RFC" value="8174"/>
+            <seriesInfo name="BCP" value="14"/>
+            <author initials="B." surname="Leiba" fullname="B. Leiba">
+              <organization/>
+            </author>
+            <date year="2017" month="May"/>
+            <abstract>
+              <t>RFC 2119 specifies common key words that may be used in protocol  specifications.  This document aims to reduce the ambiguity by clarifying that only UPPERCASE usage of the key words have the  defined special meanings.</t>
+            </abstract>
+          </front>
+        </reference>
+        <reference anchor="RFC7231" target="https://www.rfc-editor.org/info/rfc7231">
+          <front>
+            <title>Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content</title>
+            <seriesInfo name="DOI" value="10.17487/RFC7231"/>
+            <seriesInfo name="RFC" value="7231"/>
+            <author initials="R." surname="Fielding" fullname="R. Fielding" role="editor">
+              <organization/>
+            </author>
+            <author initials="J." surname="Reschke" fullname="J. Reschke" role="editor">
+              <organization/>
+            </author>
+            <date year="2014" month="June"/>
+            <abstract>
+              <t>The Hypertext Transfer Protocol (HTTP) is a stateless \%application- level protocol for distributed, collaborative, hypertext information systems.  This document defines the semantics of HTTP/1.1 messages, as expressed by request methods, request header fields, response status codes, and response header fields, along with the payload of messages (metadata and body content) and mechanisms for content negotiation.</t>
+            </abstract>
+          </front>
+        </reference>
+        <reference anchor="RFC8615" target="https://www.rfc-editor.org/info/rfc8615">
+          <front>
+            <title>Well-Known Uniform Resource Identifiers (URIs)</title>
+            <seriesInfo name="DOI" value="10.17487/RFC8615"/>
+            <seriesInfo name="RFC" value="8615"/>
+            <author initials="M." surname="Nottingham" fullname="M. Nottingham">
+              <organization/>
+            </author>
+            <date year="2019" month="May"/>
+            <abstract>
+              <t>This memo defines a path prefix for "well-known locations", "/.well-known/", in selected Uniform Resource Identifier (URI) schemes.</t>
+              <t>In doing so, it obsoletes RFC 5785 and updates the URI schemes defined in RFC 7230 to reserve that space.  It also updates RFC 7595 to track URI schemes that support well-known URIs in their registry.</t>
+            </abstract>
+          </front>
+        </reference>
+      </references>
+    </references>
+    <section anchor="acknowledgements" numbered="true" toc="default">
+      <name>Acknowledgements</name>
+      <t>This work is based on Erik Wilde's work
+on service description contained in <xref target="RFC8631" format="default"/>.</t>
+    </section>
+    <section numbered="false" anchor="change-log" toc="default">
+      <name>Change Log</name>
+      <t>RFC EDITOR PLEASE DELETE THIS SECTION.</t>
+    </section>
+    <section numbered="false" anchor="faq" toc="default">
+      <name>FAQ</name>
+      <t>RFC EDITOR PLEASE DELETE THIS SECTION.</t>
+    </section>
+  </back>

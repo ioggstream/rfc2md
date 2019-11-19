@@ -1,0 +1,148 @@
+  <middle>
+    <section anchor="introduction" numbered="true" toc="default">
+      <name>Introduction</name>
+      <t><xref target="RFC8631" format="default"/> introduced the ability
+to provide documentation, descriptions, metadata, or status
+information for Web Services via Link Relations.</t>
+      <t>Making service metadata directly available
+under the ".well-known/" path (see Section 1.1 of <xref target="RFC5785" format="default"/>)
+enables retrieving those informations
+without the need to process Link relations
+or send the following headers in every response.</t>
+      <artwork name="" type="" align="left" alt=""><![CDATA[
+Link: <https://api.example.net/.well-known/service-desc>; rel="service-desc"
+Link: <https://api.example.net/.well-known/status>; rel="status"; type="application/problem+json"
+]]></artwork>
+      <t>For example a client could
+evaluate authentication or authorization policies
+defined in "service-desc" before trying to access the service.</t>
+      <t>Another example is getting the service "status"
+without looking for informations into Link relation response headers.</t>
+      <t>This specification adds the corrisponding entries in the well-known URI IANA
+Registry.</t>
+      <section anchor="notational-conventions" numbered="true" toc="default">
+        <name>Notational Conventions</name>
+        <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
+"SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this
+document are to be interpreted as described in BCP 14 (<xref target="RFC2119" format="default"/> and <xref target="RFC8174" format="default"/>)
+when, and only when, they appear in all capitals, as shown here.</t>
+        <t>The terms "documentation" and "description" are to be interpreted
+as described in Section 3 of <xref target="RFC8631" format="default"/>.</t>
+      </section>
+    </section>
+    <section anchor="well-known-uri-for-web-services" numbered="true" toc="default">
+      <name>Well-Known URI for Web Services</name>
+      <t>This specifications registers the following Well-Known URIs
+associated to the Link Relations defined in <xref target="RFC8631" format="default"/>.</t>
+      <t>Servers MAY use content negotiation (see Section 3.4 of <xref target="RFC7231" format="default"/>)
+to provide different types
+of documentation or description.</t>
+      <t>Clients SHOULD NOT make any assumptions about the provided type
+of documentation or description.</t>
+    </section>
+    <section anchor="examples" numbered="true" toc="default">
+      <name>Examples</name>
+      <section anchor="communicate-api-specification-via-well-known-uri" numbered="true" toc="default">
+        <name>Communicate API specification via well-known URI</name>
+        <t>Request:</t>
+        <artwork name="" type="" align="left" alt=""><![CDATA[
+  GET /.well-know/service-desc
+  Accept: application/vnd.oai.openapi;version=3.0.1
+
+]]></artwork>
+        <t>Response:</t>
+        <artwork name="" type="" align="left" alt=""><![CDATA[
+  HTTP/1.1 200 Ok
+  Content-Type: application/vnd.oai.openapi;version=3.0.1
+
+  ...openapi specification...
+]]></artwork>
+      </section>
+      <section anchor="communicate-api-documentation-via-well-known-uri" numbered="true" toc="default">
+        <name>Communicate API documentation via well-known URI</name>
+        <t>Request:</t>
+        <artwork name="" type="" align="left" alt=""><![CDATA[
+  GET /.well-know/service-doc
+  Accept: text/html, application/pdf
+
+]]></artwork>
+        <t>Response:</t>
+        <artwork name="" type="" align="left" alt=""><![CDATA[
+  HTTP/1.1 200 Ok
+  Content-Type: text/html
+
+  ...html documentation...
+]]></artwork>
+      </section>
+      <section anchor="communicate-api-status-via-well-known-uri" numbered="true" toc="default">
+        <name>Communicate API status via well-known URI</name>
+        <t>Request:</t>
+        <artwork name="" type="" align="left" alt=""><![CDATA[
+  GET /.well-know/status
+
+]]></artwork>
+        <t>Response:</t>
+        <artwork name="" type="" align="left" alt=""><![CDATA[
+  HTTP/1.1 503 Ok
+  Content-Type: application/problem+json
+  Retry-After: 3600
+  
+  {
+    "status": 503,
+    "title": "Service Unavailable",
+    "detail": "Service is under maintenance. Check the Retry-After header."
+  }
+  
+]]></artwork>
+      </section>
+    </section>
+    <section anchor="security-considerations" numbered="true" toc="default">
+      <name>Security Considerations</name>
+      <section anchor="information-exposure" numbered="true" toc="default">
+        <name>Information exposure</name>
+        <t>TODO</t>
+      </section>
+    </section>
+    <section anchor="iana-considerations" numbered="true" toc="default">
+      <name>IANA Considerations</name>
+      <t>This specification defines a "well-known" URI
+   using the registration procedure and template from Section 5.1 of
+   <xref target="RFC8615" format="default"/>.</t>
+      <section anchor="service-doc-well-known-uri-registration" numbered="true" toc="default">
+        <name>service-doc Well-Known URI Registration</name>
+        <t>IANA has added the following to the "Well-Known URIs" <xref target="RFC8615" format="default"/>
+registry:</t>
+        <t>URI suffix:  service-doc</t>
+        <t>Change controller:  IETF.</t>
+        <t>Specification document(s): Section 6.1 of <xref target="RFC8631" format="default"/>, this document</t>
+        <t>Related information: None.</t>
+      </section>
+      <section anchor="service-desc-well-known-uri-registration" numbered="true" toc="default">
+        <name>service-desc Well-Known URI Registration</name>
+        <t>IANA has added the following to the "Well-Known URIs" <xref target="RFC8615" format="default"/>
+registry:</t>
+        <t>URI suffix:  service-desc</t>
+        <t>Change controller:  IETF.</t>
+        <t>Specification document(s): Section 6.2 of <xref target="RFC8631" format="default"/>, this document</t>
+        <t>Related information:  None.</t>
+      </section>
+      <section anchor="service-meta-well-known-uri-registration" numbered="true" toc="default">
+        <name>service-meta Well-Known URI Registration</name>
+        <t>IANA has added the following to the "Well-Known URIs" <xref target="RFC8615" format="default"/>
+registry:</t>
+        <t>URI suffix:  service-meta</t>
+        <t>Change controller:  IETF.</t>
+        <t>Specification document(s): Section 6.3 <xref target="RFC8631" format="default"/>, this document</t>
+        <t>Related information:  None.</t>
+      </section>
+      <section anchor="status-well-known-uri-registration" numbered="true" toc="default">
+        <name>status Well-Known URI Registration</name>
+        <t>IANA has added the following to the "Well-Known URIs" <xref target="RFC8615" format="default"/>
+registry:</t>
+        <t>URI suffix:  status</t>
+        <t>Change controller:  IETF.</t>
+        <t>Specification document(s): Section 6.4 <xref target="RFC8631" format="default"/>, this document</t>
+        <t>Related information:  None.</t>
+      </section>
+    </section>
+  </middle>

@@ -1,0 +1,10 @@
+    <note>
+      <name>Note to Readers</name>
+      <t><em>RFC EDITOR: please remove this section before publication</em></t>
+      <t>Discussion of this draft takes place on the HTTP working group mailing list
+(ietf-http-wg@w3.org), which is archived at
+<eref target="https://lists.w3.org/Archives/Public/ietf-http-wg/">https://lists.w3.org/Archives/Public/ietf-http-wg/</eref>.</t>
+      <t>The source code and issues list for this draft can be found at
+<eref target="https://github.com/ioggstream/draft-polli-service-description-well-known-uri">https://github.com/ioggstream/draft-polli-service-description-well-known-uri</eref>.</t>
+    </note>
+
