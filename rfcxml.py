@@ -217,10 +217,10 @@ def parse_section(s):
         ret += " {#%s}" % s.get("anchor")
     yield ret + "\n"
 
-    if s.get('numbered') == 'false':
+    if s.get("numbered") == "false":
         yield '{:numbered="false"}\n'
 
-    yield '\n'
+    yield "\n"
     for e in s.getchildren():
         ret = parse(e)
         if isinstance(ret, str):
@@ -375,7 +375,13 @@ if __name__ == "__main__":
     else:
         txt = Path(fpath).read_bytes()
 
-    parser = etree.XMLParser(dtd_validation=False, load_dtd=True, resolve_entities=True, no_network=False, recover=True)
+    parser = etree.XMLParser(
+        dtd_validation=False,
+        load_dtd=True,
+        resolve_entities=True,
+        no_network=False,
+        recover=True,
+    )
     root = etree.parse(BytesIO(txt), parser=parser).getroot()
     out = parse(root)
     txt = "".join(out)
