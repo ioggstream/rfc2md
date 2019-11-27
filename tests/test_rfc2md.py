@@ -1,5 +1,15 @@
-from rfclib import *
+from pathlib import Path
+
 import pytest
+from lxml import etree
+from rfc2md import (
+    RFCXMLParser,
+    parse_author,
+    parse_eref,
+    parse_list,
+    parse_reference,
+    parse_t,
+)
 
 fpath = "draft-cedik-http-warning-01.xml"
 fpath = "draft-polli-service-description-well-known-uri.xml"
@@ -10,8 +20,13 @@ def rfcxml():
     return RFCXMLParser()
 
 
+def harn_get_root(fpath):
+    xml = Path(fpath).read_bytes()
+    return etree.fromstring(xml)
+
+
 def test_parse_list():
-    t = b'<list>      <t>Warn Code: 246</t>      <t>Short Description: Embedded Warning</t>      <t>Reference: <xref target="warning-header"/> of [[ this document ]]</t>   </list>'
+    t = b'<list><t>Warn Code: 246</t><t>Short Description: Embedded Warning</t><t>Reference: <xref target="warning-header"/> of [[ this document ]]</t>   </list>'
     xml_t = etree.fromstring(t)
     txt = parse_list(xml_t)
     assert " * Short Description: " in txt
@@ -37,11 +52,6 @@ def test_parse_t_2():
     assert "Short Description" in txt
 
 
-def harn_get_root(fpath):
-    xml = Path(fpath).read_bytes()
-    return etree.fromstring(xml)
-
-
 def test_parse_author():
     t = """
     <author initials="E." surname="Wilde" fullname="Erik Wilde">
@@ -63,7 +73,9 @@ def test_root(rfcxml):
     for c in root:
         rfcxml.parse(c)
         out = rfcxml.dump()
-        Path(f"_{c.tag}.md").write_text("".join(out))
+        content = "".join(out)
+        if content:
+            Path(f"_{c.tag}.md").write_text(content)
 
 
 def test_parse_section(rfcxml):
@@ -103,7 +115,7 @@ def test_parse_rfc(rfcxml):
     xml_t = etree.fromstring(t)
     txt = rfcxml.parse_rfc(xml_t)
     out = "".join(txt)
-    assert "docname: "
+    assert "docname: " in out
 
 
 def test_parse_front(rfcxml):
@@ -123,22 +135,25 @@ def test_parse_note(rfcxml):
 def test_parse_middle(rfcxml):
     root = harn_get_root("middle.xml")
     md = rfcxml.parse_middle(root)
-    out = list(md)
-    Path("_middle.md").write_text("".join(out))
+    out = "".join(md)
+    Path("_middle.md").write_text(out)
+    assert "## status" in out
 
 
 def test_parse_back(rfcxml):
     root = harn_get_root("back.xml")
     md = rfcxml.parse_back(root)
-    out = list(md)
-    Path("_back.md").write_text("".join(out))
+    out = "".join(md)
+    Path("_back.md").write_text(out)
+    assert '# FAQ {#faq}\n{:numbered="false"}' in out
 
 
 def test_parse_references(rfcxml):
     root = harn_get_root("reference.xml")
     md = rfcxml.parse_references(root)
-    out = list(md)
-    Path("_references.md").write_text("".join(out))
+    out = "".join(md)
+    Path("_references.md").write_text(out)
+    assert "\n        title: Arch" in out
 
 
 def test_parse_reference_2():
@@ -160,7 +175,7 @@ def test_parse_spanx():
     xml_t = etree.fromstring(t)
     txt = parse_t(xml_t)
     out = "".join(txt)
-    assert "*RFC: "
+    assert "*RFC EDITOR: " in out
 
 
 def test_eref():
@@ -168,3 +183,4 @@ def test_eref():
     xml_t = etree.fromstring(t)
     txt = parse_eref(xml_t)
     out = "".join(txt)
+    assert "<https://lists.w3.org/Archives/Public/ietf-http-wg/>" == out

@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
+import logging
+import re
 from io import BytesIO
-from sys import argv, stderr
 from pathlib import Path
-from lxml import etree
+
 import lxml
 from lxml import etree
-import re
-import logging
 
 log = logging.getLogger()
 logging.basicConfig()
-# Global variables
+
 PAD = " " * 4
 
 
@@ -87,7 +86,14 @@ class RFCXMLParser(object):
             log.warning("Missing tag: %r. %r", e.tag, etree.tostring(e))
             return ""
         f = parse_map[e.tag]
-        if e.tag in ("references", "front", "abstract", "note", "middle", "back"):
+        if e.tag in (
+            "references",
+            "front",
+            "abstract",
+            "note",
+            "middle",
+            "back",
+        ):
             log.warning("Assigning tag %r to %r", e.tag, self.parts)
             self.parts[e.tag] = list(f(e))
             return
@@ -134,7 +140,11 @@ class RFCXMLParser(object):
                 yield from ret
 
     def parse_rfc(self, e):
-        field_map = {"ipr": "ipr", "docName": "docname", "category": "category"}
+        field_map = {
+            "ipr": "ipr",
+            "docName": "docname",
+            "category": "category",
+        }
         yield "---\n"
         for k, v in field_map.items():
             if e.get(k):
@@ -173,13 +183,10 @@ class RFCXMLParser(object):
                 yield from p
 
     def dump(self):
-        ret = "".join(self.parts["front"])
-        ret += "".join(self.parts["references"])
-        ret += "".join(self.parts["abstract"])
-        ret += "".join(self.parts["note"])
-        ret += "".join(self.parts["middle"])
-        ret += "".join(self.parts["back"])
-        return ret
+        parts = ["front", "references", "abstract", "note", "middle", "back"]
+        parts_l = ("".join(self.parts[p]) for p in parts if p in self.parts)
+
+        return "".join(parts_l)
 
 
 def parse_front(e):
@@ -430,7 +437,4 @@ if __name__ == "__main__":
 
     rfcxml = RFCXMLParser()
     out = rfcxml.parse(root)
-    out = list(out)
     print(rfcxml.dump())
-    # txt = "".join(out)
-    # log.warning(txt)

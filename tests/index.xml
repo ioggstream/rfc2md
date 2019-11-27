@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rfc PUBLIC "-//IETF//DTD RFC 2629//EN" "https://xml2rfc.tools.ietf.org/authoring/rfc2629.dtd" [
+  <!ENTITY rfc2119 SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml">
+  <!ENTITY rfc2617 SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2617.xml">
+  <!ENTITY rfc3230 SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.3230.xml">
+  <!ENTITY rfc3447 SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.3447.xml">
+  <!ENTITY rfc4648 SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.4648.xml">
+  <!ENTITY rfc5246 SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5246.xml">
+  <!ENTITY rfc6234 SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.6234.xml">
+  <!ENTITY rfc6376 SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.6376.xml">
+  <!ENTITY rfc6749 SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.6749.xml">
+  <!ENTITY rfc7230 SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7230.xml">
+  <!ENTITY rfc7235 SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7235.xml">
+  <!ENTITY rfc8017 SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8017.xml">
+  <!ENTITY rfc8032 SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8032.xml">
+  <!ENTITY jwa SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-jose-json-web-algorithms-20.xml">
+]>
+<?xml-stylesheet type="text/xsl" href="rfc2629.xsl" ?>
+<?rfc compact="yes" ?>
+<?rfc subcompact="no" ?>
+<?rfc toc="yes" ?>
+<?rfc sortrefs="yes" ?>
+<?rfc symrefs="yes" ?>
+<rfc category="std" ipr="trust200902" submissionType="independent"
+     docName="draft-cavage-http-signatures-12">
+<back>
+ <references title="Normative References">
+  &rfc4648;
+  &rfc7230;
+  &rfc7235;
+ </references>
+ <references title="Informative References">
+  &rfc2617;
+  &rfc3230;
+  &rfc5246;
+  &rfc6234;
+  &rfc6749;
+  &rfc8017;
+  &rfc8032;
+ </references>
+
+ <section anchor="appendix-a" title="Security Considerations">
+  <t>
+There are a number of security considerations to take into account when implementing
+or utilizing this specification. A thorough security analysis of this protocol,
+including its strengths and weaknesses, can be found in
+<eref target="https://web-payments.org/specs/source/http-signatures-audit/">
+Security Considerations for HTTP Signatures</eref>.
+  </t>
+ </section>
+
+ <section anchor="appendix-b" title="Extensions">
+  <t>
+This specification was designed to be simple, modular, and extensible. There
+are a number of other specifications that build on this one. For
+example, the
+<eref target="https://web-payments.org/specs/source/http-signature-nonces/">HTTP Signature Nonces</eref>
+specification details how to
+use HTTP Signatures over a non-secured channel like HTTP and the
+<eref target="https://web-payments.org/specs/source/http-signature-trailers/">HTTP Signature Trailers</eref>
+specification explains how to apply HTTP
+Signatures to streaming content. Developers that desire more functionality
+than this specification provides are urged to ensure that an extension
+specification doesn't already exist before implementing a proprietary
+extension.
+  </t>
+
+  <t>
+If extensions to this specification are made by adding new Signature
+Parameters, those extension parameters MUST be registered in the
+Signature Authentication Scheme Registry. The registry will be created and
+maintained at (the suggested URI)
+<eref target="https://www.iana.org/assignments/http-auth-scheme-signature">
+https://www.iana.org/assignments/http-auth-scheme-signature</eref>. An
+example entry in this registry is included below:
+
+   <figure>
+    <artwork>
+Signature Parameter: nonce
+Reference to specification: [HTTP_AUTH_SIGNATURE_NONCE], Section XYZ.
+Notes (optional): The HTTP Signature Nonces specification details
+how to use HTTP Signatures over a unsecured channel like HTTP.
+    </artwork>
+   </figure>
+  </t>
+ </section>
+
+ <section anchor="appendix-c" title="Test Values">
+  <t>
+WARNING: THESE TEST VECTORS ARE OLD AND POSSIBLY WRONG. THE NEXT VERSION OF
+THIS SPECIFICATION WILL CONTAIN THE PROPER TEST VECTORS.
+  </t>
+  <t>
+The following test data uses the following RSA 2048-bit keys,
+which we will refer to as `keyId=Test` in the following samples:
+
+   <figure>
+    <artwork>
+-----BEGIN PUBLIC KEY-----
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDCFENGw33yGihy92pDjZQhl0C3
+6rPJj+CvfSC8+q28hxA161QFNUd13wuCTUcq0Qd2qsBe/2hFyc2DCJJg0h1L78+6
+Z4UMR7EOcpfdUE9Hf3m/hs+FUR45uBJeDK1HSFHD8bHKD6kv8FPGfJTotc+2xjJw
+oYi+1hqp1fIekaxsyQIDAQAB
+-----END PUBLIC KEY-----
+    </artwork>
+   </figure>
+
+   <figure>
+    <artwork>
+-----BEGIN RSA PRIVATE KEY-----
+MIICXgIBAAKBgQDCFENGw33yGihy92pDjZQhl0C36rPJj+CvfSC8+q28hxA161QF
+NUd13wuCTUcq0Qd2qsBe/2hFyc2DCJJg0h1L78+6Z4UMR7EOcpfdUE9Hf3m/hs+F
+UR45uBJeDK1HSFHD8bHKD6kv8FPGfJTotc+2xjJwoYi+1hqp1fIekaxsyQIDAQAB
+AoGBAJR8ZkCUvx5kzv+utdl7T5MnordT1TvoXXJGXK7ZZ+UuvMNUCdN2QPc4sBiA
+QWvLw1cSKt5DsKZ8UETpYPy8pPYnnDEz2dDYiaew9+xEpubyeW2oH4Zx71wqBtOK
+kqwrXa/pzdpiucRRjk6vE6YY7EBBs/g7uanVpGibOVAEsqH1AkEA7DkjVH28WDUg
+f1nqvfn2Kj6CT7nIcE3jGJsZZ7zlZmBmHFDONMLUrXR/Zm3pR5m0tCmBqa5RK95u
+412jt1dPIwJBANJT3v8pnkth48bQo/fKel6uEYyboRtA5/uHuHkZ6FQF7OUkGogc
+mSJluOdc5t6hI1VsLn0QZEjQZMEOWr+wKSMCQQCC4kXJEsHAve77oP6HtG/IiEn7
+kpyUXRNvFsDE0czpJJBvL/aRFUJxuRK91jhjC68sA7NsKMGg5OXb5I5Jj36xAkEA
+gIT7aFOYBFwGgQAQkWNKLvySgKbAZRTeLBacpHMuQdl1DfdntvAyqpAZ0lY0RKmW
+G6aFKaqQfOXKCyWoUiVknQJAXrlgySFci/2ueKlIE1QqIiLSZ8V8OlpFLRnb1pzI
+7U1yQXnTAEFYM560yJlzUpOb1V4cScGd365tiSMvxLOvTA==
+-----END RSA PRIVATE KEY-----
+    </artwork>
+   </figure>
+  </t>
+
+  <t>
+All examples use this request:
+   <figure>
+    <artwork>
+POST /foo?param=value&amp;pet=dog HTTP/1.1
+Host: example.com
+Date: Sun, 05 Jan 2014 21:31:40 GMT
+Content-Type: application/json
+Digest: SHA-256=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=
+Content-Length: 18
+
+{"hello": "world"}
+    </artwork>
+   </figure>
+  </t>
+
+  <section anchor="default-test" title="Default Test">
+   <t>
+If a list of headers is not included, the date is the only header that is
+signed by default for rsa-sha256. The string to sign would be:
+    <figure>
+     <artwork>
+date: Sun, 05 Jan 2014 21:31:40 GMT</artwork>
+   </figure>
+   </t>
+
+   <t>
+The Authorization header would be:
+    <figure>
+     <artwork>
+Authorization: Signature keyId="Test",algorithm="rsa-sha256",
+signature="SjWJWbWN7i0wzBvtPl8rbASWz5xQW6mcJmn+ibttBqtifLN7Sazz
+6m79cNfwwb8DMJ5cou1s7uEGKKCs+FLEEaDV5lp7q25WqS+lavg7T8hc0GppauB
+6hbgEKTwblDHYGEtbGmtdHgVCk9SuS13F0hZ8FD0k/5OxEPXe5WozsbM="</artwork>
+   </figure>
+   </t>
+
+   <t>
+The Signature header would be:
+    <figure>
+     <artwork>
+Signature: keyId="Test",algorithm="rsa-sha256",
+signature="SjWJWbWN7i0wzBvtPl8rbASWz5xQW6mcJmn+ibttBqtifLN7Sazz
+6m79cNfwwb8DMJ5cou1s7uEGKKCs+FLEEaDV5lp7q25WqS+lavg7T8hc0GppauB
+6hbgEKTwblDHYGEtbGmtdHgVCk9SuS13F0hZ8FD0k/5OxEPXe5WozsbM="</artwork>
+   </figure>
+   </t>
+  </section>
+
+  <section anchor="basic-test" title="Basic Test">
+   <t>
+The minimum recommended data to sign is the (request-target), host, and date. In
+this case, the string to sign would be:
+    <figure>
+     <artwork>
+(request-target): post /foo?param=value&amp;pet=dog
+host: example.com
+date: Sun, 05 Jan 2014 21:31:40 GMT
+    </artwork>
+   </figure>
+   </t>
+
+   <t>
+The Authorization header would be:
+    <figure>
+     <artwork>
+Authorization: Signature keyId="Test",algorithm="rsa-sha256",
+  headers="(request-target) host date",
+  signature="qdx+H7PHHDZgy4y/Ahn9Tny9V3GP6YgBPyUXMmoxWtLbHpUnXS
+  2mg2+SbrQDMCJypxBLSPQR2aAjn7ndmw2iicw3HMbe8VfEdKFYRqzic+efkb3
+  nndiv/x1xSHDJWeSWkx3ButlYSuBskLu6kd9Fswtemr3lgdDEmn04swr2Os0="
+    </artwork>
+   </figure>
+   </t>
+  </section>
+
+  <section anchor="all-headers-test" title="All Headers Test">
+   <t>
+A strong signature including all of the headers and a digest of the body of
+the HTTP request would result in the following signing string:
+    <figure>
+     <artwork>
+(request-target): post /foo?param=value&amp;pet=dog
+host: example.com
+date: Sun, 05 Jan 2014 21:31:40 GMT
+content-type: application/json
+digest: SHA-256=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=
+content-length: 18</artwork>
+    </figure>
+   </t>
+
+   <t>
+The Authorization header would be:
+    <figure>
+     <artwork>
+Authorization: Signature keyId="Test",algorithm="rsa-sha256",
+  created=1402170695, expires=1402170699,
+  headers="(request-target) (created) (expires)
+    host date content-type digest content-length",
+  signature="vSdrb+dS3EceC9bcwHSo4MlyKS59iFIrhgYkz8+oVLEEzmYZZvRs
+    8rgOp+63LEM3v+MFHB32NfpB2bEKBIvB1q52LaEUHFv120V01IL+TAD48XaERZF
+    ukWgHoBTLMhYS2Gb51gWxpeIq8knRmPnYePbF5MOkR0Zkly4zKH7s1dE="</artwork>
+    </figure>
+   </t>
+
+   <t>
+The Signature header would be:
+    <figure>
+     <artwork>
+Signature: keyId="Test",algorithm="rsa-sha256",
+  created=1402170695, expires=1402170699,
+  headers="(request-target) (created) (expires)
+    host date content-type digest content-length",
+  signature="vSdrb+dS3EceC9bcwHSo4MlyKS59iFIrhgYkz8+oVLEEzmYZZvRs
+    8rgOp+63LEM3v+MFHB32NfpB2bEKBIvB1q52LaEUHFv120V01IL+TAD48XaERZF
+    ukWgHoBTLMhYS2Gb51gWxpeIq8knRmPnYePbF5MOkR0Zkly4zKH7s1dE="</artwork>
+    </figure>
+   </t>
+ </section>
+ </section>
+ <section anchor="acknowledgements" title="Acknowledgements">
+  <t>
+The editor would like to thank the following individuals for feedback on and
+implementations of the specification (in alphabetical order):
+Mark Adamcin,
+Mark Allen,
+Paul Annesley,
+Karl Böhlmark,
+Stéphane Bortzmeyer,
+Sarven Capadisli,
+Liam Dennehy,
+ductm54,
+Stephen Farrell,
+Phillip Hallam-Baker,
+Eric Holmes,
+Andrey Kislyuk,
+Adam Knight,
+Dave Lehn,
+Dave Longley,
+James H. Manger,
+Ilari Liusvaara,
+Mark Nottingham,
+Yoav Nir,
+Adrian Palmer,
+Lucas Pardue,
+Roberto Polli,
+Julian Reschke,
+Michael Richardson,
+Wojciech Rygielski,
+Adam Scarr,
+Cory J. Slep,
+Dirk Stein,
+Henry Story,
+Lukasz Szewc,
+Chris Webber, and
+Jeffrey Yasskin
+  </t>
+ </section>
+ <section anchor="appendix-d" title="IANA Considerations">
+  <section anchor="iana-scheme" title="Signature Authentication Scheme">
+   <t>
+The following entry should be added to the Authentication Scheme Registry
+located at <eref target="https://www.iana.org/assignments/http-authschemes">
+https://www.iana.org/assignments/http-authschemes</eref>
+   </t>
+   <t>
+Authentication Scheme Name: Signature<vspace/>
+Reference: [RFC_THIS_DOCUMENT], Section 2.<vspace/>
+Notes (optional): The Signature scheme is designed for clients to
+authenticate themselves with a server.
+   </t>
+  </section>
+  <section anchor="hsa-registry" title="HTTP Signatures Algorithms Registry">
+   <t>
+The following initial entries should be added to the Canonicalization Algorithms
+Registry to be created and maintained at (the suggested URI)
+<eref target="https://www.iana.org/assignments/shm-algorithms">
+https://www.iana.org/assignments/shm-algorithms</eref>:
+   </t>
+   <t>
+Editor's note: The references in this section are problematic as many of the
+specifications that they refer to are too implementation specific, rather
+than just pointing to the proper signature and hashing specifications. A
+better approach might be just specifying the signature and hashing function
+specifications, leaving implementers to connect the dots (which are not that
+hard to connect).
+   </t>
+   <t>
+Algorithm Name: hs2019<vspace/>
+Status: active<vspace/>
+Canonicalization Algorithm: [RFC_THIS_DOCUMENT],
+<eref target="#canonicalization">
+  Section 2.3: Signature String Construction
+</eref><vspace/>
+Hash Algorithm: <xref target="RFC6234">RFC 6234</xref>,
+SHA-512 (SHA-2 with 512-bits of digest output)<vspace/>
+Digital Signature Algorithm: Derived from metadata associated with `keyId`.
+Recommend support for
+<xref target="RFC8017">RFC 8017</xref>, Section 8.1: RSASSA-PSS,
+<xref target="RFC6234">RFC 6234</xref>, Section 7.1: SHA-Based HMACs,
+ANSI X9.62-2005 ECDSA, P-256, and
+<xref target="RFC8032">RFC 8032</xref>, Section 5.1: Ed25519ph, Ed25519ctx,
+and Ed25519.
+   </t>
+   <t>
+Algorithm Name: rsa-sha1<vspace/>
+Status: deprecated, SHA-1 not secure.<vspace/>
+Canonicalization Algorithm: [RFC_THIS_DOCUMENT],
+<eref target="#canonicalization">
+  Section 2.3: Signature String Construction
+</eref><vspace/>
+Hash Algorithm: <xref target="RFC6234">RFC 6234</xref>,
+SHA-1 (SHA-1 with 160-bits of digest output)<vspace/>
+Digital Signature Algorithm:
+  <xref target="RFC8017">RFC 8017</xref>,  Section 8.2: RSASSA-PKCS1-v1_5<vspace/>
+   </t>
+   <t>
+Algorithm Name: rsa-sha256<vspace/>
+Status: deprecated, specifying signature algorithm enables attack
+vector.<vspace/>
+Canonicalization Algorithm: [RFC_THIS_DOCUMENT],
+<eref target="#canonicalization">
+  Section 2.3: Signature String Construction
+</eref><vspace/>
+Hash Algorithm: <xref target="RFC6234">RFC 6234</xref>,
+SHA-256 (SHA-2 with 256-bits of digest output)<vspace/>
+Digital Signature Algorithm:
+  <xref target="RFC8017">RFC 8017</xref>,  Section 8.2: RSASSA-PKCS1-v1_5<vspace/>
+   </t>
+   <t>
+Algorithm Name: hmac-sha256<vspace/>
+Status: deprecated, specifying signature algorithm enables attack
+vector.<vspace/>
+Canonicalization Algorithm: [RFC_THIS_DOCUMENT],
+<eref target="#canonicalization">
+  Section 2.3: Signature String Construction
+</eref><vspace/>
+Hash Algorithm: <xref target="RFC6234">RFC 6234</xref>,
+SHA-256 (SHA-2 with 256-bits of digest output)<vspace/>
+Message Authentication Code Algorithm:
+  <xref target="RFC6234">RFC 6234</xref>, Section 7.1: SHA-Based HMACs<vspace/>
+   </t>
+   <t>
+Algorithm Name: ecdsa-sha256<vspace/>
+Status: deprecated, specifying signature algorithm enables attack
+vector.<vspace/>
+Canonicalization Algorithm: [RFC_THIS_DOCUMENT],
+<eref target="#canonicalization">
+  Section 2.3: Signature String Construction
+</eref><vspace/>
+Hash Algorithm: <xref target="RFC6234">RFC 6234</xref>,
+SHA-256 (SHA-2 with 256-bits of digest output)<vspace/>
+Digital Signature Algorithm:
+  ANSI X9.62-2005 ECDSA, P-256<vspace/>
+   </t>
+  </section>
+
+ </section>
+</back>
+</rfc>
